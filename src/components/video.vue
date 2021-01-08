@@ -1,68 +1,65 @@
 <template>
     <div>
         <div class="video">
-
             <div v-if="!ready">Loading...</div>
             <div v-else class="top"></div>
 
             <div ref="player" id="player"></div>
         </div>
-        
-        <button @click="togglePlay">Pause/Play</button>
-        <input type="range" name="videoBar" id="videoBar">
+
+        <videoCont id="controller" :player="player" :io="io" :vidDuration="vidDuration" :vidTime="vidTime"></videoCont>
     </div>
 </template>
 
 <script>
 
+import videoCont from "@/components/vidControll";
+
+import wait from "@/functions/await";
+import vidReady from "@/functions/vidReady";
+import handleData from "@/functions/handleData";
+
 export default {
     name: 'video',
     props: ['queue', 'io'],
+    components: {
+        videoCont
+    },
     data() {
         return {
-            reConnectAttempts: 0,
+            roomId: this.$route.params.roomId,
             roomVideo: '89ppVWIint8',
             player: null,
+            paused: true, 
             ready: false,
-            vidReady: false,
-            vidPaused: true,
+            vidTime: 0,
+            vidDuration: 0,
+            roomInfo: false,
+            reConnectAttempts: 0
         }
     },
     methods: {
         onReady(e) {
-            this.ready = true;
-            console.log(this.player.getPlayerState());
+            this.barProgress()
 
-            // check if iframe is ready to play else timed out on 300e attempt
-            setInterval(() => {
-                if (!this.vidReady) {
-                    if (this.player.getPlayerState() == 1 || this.player.getPlayerState() == -1) {
-                        
-                        if (this.vidPaused) this.player.pauseVideo()
-                        else this.player.playVideo()
+            vidReady(   
+                this.ready, 
+                this.player,
+                this.paused, 
+                this.reConnectAttempts, 
+                this.io, 
+                this.$router
+            )
+            
+            this.ready = true
 
-                        console.log(this.vidPaused);
+            this.vidDuration = this.player.getDuration()
 
-                        this.vidReady = true
-                        this.io.emit('testroom', { vidReady: this.vidReady });
-                    } else {
-                        this.vidReady = false
-                        this.reConnectAttempts++
-
-                        console.log('reconnecting... '+this.reConnectAttempts+'e attempt');
-                        if (this.reConnectAttempts == 300) {
-                            this.vidReady = true
-                            this.$router.push('/room/roomAction=join/error=room%20timed%20out/join=none')
-                        }
-                    }
-                }
-            }, 70);
-        },
-        togglePlay() {
-            this.io.emit('testroom', { onStateChange: this.player.getPlayerState() });
+            this.io.on('testroom', (data) => {
+                handleData(data, this.player, this.vidDuration, this.io)
+            })
         },
         async init() {
-            this.player = null;
             var tag = document.createElement('script')
             tag.src = "https://www.youtube.com/iframe_api";
             var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -77,81 +74,55 @@ export default {
                 events: {
                     'onReady': this.onReady,
                 },
-                playerVars: { 'autoplay': 1, 'controls': 0 },
+                playerVars: { 'autoplay': 1, 'showinfo': 0,  'controls': 0 },
             });
+        },
+        barProgress() {
+            setInterval(() => {
+                this.vidTime = this.player.getCurrentTime()
+            }, 1000);
         }
+    },
+    mounted() {
+        this.init()
     },
     created() {
         this.io.on('testroom', (data) => {
             if (data.roomInfo) {
-                this.vidPaused = data.roomInfo.video.paused
+                if (data.roomInfo.video.paused) this.paused = true
+                else this.paused = false
+                
                 this.roomVideo = data.roomInfo.video.id
             }
-            if (data.videoData) {
-                this.player.loadVideoById(data.videoData.videoId)
-            }
-            if (data.loadVideoById) {
-                this.player.loadVideoById(data.loadVideoById)
-            }
-            if (data.playVideo) {
-                this.player.playVideo()
-            }
-            if (data.pauseVideo) {
-                this.player.pauseVideo()
-            }
-            if (data.seekTo) {
-                console.log(data);
-                this.player.seekTo(data.seekTo, true)
-            }
-            if (data.sendVidTime) {
-                console.log(data);
-                this.io.emit('testroom', { 
-                    seek: {
-                        time: this.player.getCurrentTime(),
-                        socketId: data.sendVidTime 
-                    }
-                })
-            }
-    })
-
-    setInterval(() => {
-        if (this.player.getPlayerState() == 3) {
-            this.onReady
-        }
-        
-    }, 1000);
-
-
-    },
-    mounted() {
-        this.init();
+        })
     }
 }
-
-const wait = async (duration) => {
-    await new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, 1000);
-    })
-}
-
 
 </script>
 
 <style scoped>
 
-.video {
-    position: relative;
-}
+    #controller {
+        width: 100%;
+        position: fixed;
+        bottom: 0px;
+    }
 
-.top {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    #bar {
+        width: 80%;
+    }
 
-}
+    .video {
+        position: relative;
+    }
+
+    .top {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+    }
 
 </style>

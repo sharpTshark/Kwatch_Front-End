@@ -85,9 +85,6 @@ export default {
             }
         })
     },
-    mounted() {
-
-    },
     beforeUnmount() {
         this.io.disconnect();
     }

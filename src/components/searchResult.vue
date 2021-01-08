@@ -31,11 +31,7 @@ export default {
         },
         search() {
             axios   .post('http://192.168.1.29:3000/findvideo', { search: this.searchMeta })
-                    .then(res => {
-                        res.data.forEach(item => {
-                            this.searchQueue.push(item)
-                        });
-                    })
+                    .then(res => this.searchQueue = res.data)
                     .catch(err => console.log(err))
         }
     },
