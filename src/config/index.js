@@ -1,3 +1,3 @@
 module.exports = {
-	apiEndpoint: 'https://kwatch.herokuapp.com',
+	apiEndpoint: 'https://kwatchback.herokuapp.com'
 }
