@@ -1,13 +1,15 @@
 <template>
-    <div>
-        <div class="video">
-            <div v-if="!ready">Loading...</div>
-            <div v-else class="top"></div>
+    <div class="video">
+        <div class="player-wrapper">
+            <div class="player">
+                <div v-if="!ready">Loading...</div>
+                <div v-else class="top" id="top"></div>
 
-            <div ref="player" id="player"></div>
+                <div ref="player" id="player"></div>
+            </div>
         </div>
 
-        <videoCont id="controller" :player="player" :io="io" :vidDuration="vidDuration" :vidTime="vidTime"></videoCont>
+        <videoCont id="controller" :player="player" :io="io" :vidDuration="vidDuration" :vidTime="vidTime" />
     </div>
 </template>
 
@@ -35,7 +37,8 @@ export default {
             vidTime: 0,
             vidDuration: 0,
             roomInfo: false,
-            reConnectAttempts: 0
+            reConnectAttempts: 0,
+            windowHeight: window.innerHeight,
         }
     },
     methods: {
@@ -48,16 +51,26 @@ export default {
                 this.paused, 
                 this.reConnectAttempts, 
                 this.io, 
-                this.$router
+                this.$router,
+                this.roomId
             )
             
             this.ready = true
 
             this.vidDuration = this.player.getDuration()
 
-            this.io.on('testroom', (data) => {
-                handleData(data, this.player, this.vidDuration, this.io)
+            this.io.on(this.roomId, (data) => {
+                handleData(data, this.player, this.io, this.roomId)
+                if (data.loadVideoById) {
+                    this.player.loadVideoById(data.loadVideoById)
+                    setTimeout(() => {
+                        this.vidDuration = this.player.getDuration()
+                    }, 1000);
+                }
             })
+        },
+        onStateChange(e) {
+
         },
         async init() {
             var tag = document.createElement('script')
@@ -68,13 +81,14 @@ export default {
             await wait();
 
             this.player = new YT.Player('player', {
-                height: '500',
                 width: '100%',
+                height: window.innerHeight-200,
                 videoId: this.roomVideo,
                 events: {
                     'onReady': this.onReady,
+                    'onStateChange': this.onStateChange
                 },
-                playerVars: { 'autoplay': 1, 'showinfo': 0,  'controls': 0 },
+                playerVars: { 'autoplay': 1, 'showinfo': 0,  'controls': 0, 'rel': 0 },
             });
         },
         barProgress() {
@@ -83,11 +97,8 @@ export default {
             }, 1000);
         }
     },
-    mounted() {
-        this.init()
-    },
     created() {
-        this.io.on('testroom', (data) => {
+        this.io.on(this.roomId, (data) => {
             if (data.roomInfo) {
                 if (data.roomInfo.video.paused) this.paused = true
                 else this.paused = false
@@ -95,6 +106,9 @@ export default {
                 this.roomVideo = data.roomInfo.video.id
             }
         })
+    },
+    mounted() {
+        this.init()
     }
 }
 
@@ -102,17 +116,7 @@ export default {
 
 <style scoped>
 
-    #controller {
-        width: 100%;
-        position: fixed;
-        bottom: 0px;
-    }
-
-    #bar {
-        width: 80%;
-    }
-
-    .video {
+    .player {
         position: relative;
     }
 

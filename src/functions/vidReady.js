@@ -1,11 +1,11 @@
-const ready = (ready, player, paused, reConnectAttempts, io, $router) => {
+const ready = (ready, player, paused, reConnectAttempts, io, $router, roomId) => {
     setInterval(() => {
         if (!ready) {
             if (player.getPlayerState() == 1 || player.getPlayerState() == -1 || player.getPlayerState() == 5) {
                 if (paused) player.pauseVideo()
                 else player.playVideo()
                 ready = true
-                io.emit('testroom', { vidReady: ready });
+                io.emit(roomId, { vidReady: ready });
             } else {
                 ready = false
                 reConnectAttempts++
@@ -19,4 +19,5 @@ const ready = (ready, player, paused, reConnectAttempts, io, $router) => {
         }
     }, 70);
 }
+
 module.exports = ready

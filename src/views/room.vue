@@ -1,17 +1,24 @@
 <template>
-    <div id="room">
-        <div>
-            <div class="room-info">
-                {{settings.roomId}} ||| {{settings.roomName}} ||| {{settings.roomAdmin}}
+
+    <div class="" id="room">
+        <div class="row">
+            <div @click="hideBtn()" id="arrow-btn" class="arrow-btn">
+                <i class="fas fa-chevron-left"></i>
             </div>
-            <videoComp :queue="roomQueue" :io="io" />
-            <search :searchResults="searchQueue" :io="io" />
+            <div class="side-box">
+                <attendees :io="io" />
+                        <hr>
+                <queue :io="io" :queue="settings.queue" />
+            </div>
+            <div>
+                <search class="search col-md-12" :searchResults="searchQueue" :io="io" />
+            </div>
+            <div class="video col-md-12">
+                <videoComp class="video-comp" :queue="roomQueue" :io="io"/>
+            </div>
         </div>
-        <ul>
-            <li v-for="attendee in roomAttendees" key="attendee">{{attendee.username}} ||| {{attendee.socketId}}</li>
-        </ul>
     </div>
-    
+
 </template>
 
 <script>
@@ -21,12 +28,16 @@ import io from 'socket.io/client-dist/socket.io'
 
 import videoComp from "@/components/video";
 import search from "@/components/searchResult";
+import attendees from "@/components/attendees";
+import queue from "@/components/queue";
 
 export default {
     name: "room",
     components: {
         videoComp,
-        search
+        search,
+        attendees,
+        queue
     },
     data() {
         return {
@@ -35,10 +46,11 @@ export default {
             valid: false,
             settings: {
                 roomId: this.$route.params.roomId,
-                roomName: ''
+                roomName: '',
+                queue: []
             },
-            roomAttendees: [],
-            username: sessionStorage.getItem('username')
+            username: sessionStorage.getItem('username'),
+            toggled: true
         }
     },
     methods: {
@@ -48,6 +60,7 @@ export default {
                         if (res.data.valid) {
                             this.valid = true
                             this.settings = res.data.settings
+                            this.settings.queue = res.data.queue
                         } else {
                             this.$router.push('/room/roomAction=join/error=room%20not%20found/join=none')
                         }
@@ -63,6 +76,17 @@ export default {
         },
         asignUsername() {
             sessionStorage.setItem('username', this.username)
+        },
+        hideBtn() {
+            if (this.toggled) {
+                document.getElementsByClassName('side-box')[0].style.right = '-400px'
+                document.getElementsByClassName('fa-chevron-left')[0].style.transform = 'rotate(180deg)';
+                this.toggled = false
+            } else {
+                document.getElementsByClassName('side-box')[0].style.right = '0px'
+                document.getElementsByClassName('fa-chevron-left')[0].style.transform = 'rotate(0deg)';
+                this.toggled = true
+            }
         }
     },
     created() {
@@ -75,15 +99,18 @@ export default {
             }
         })
 
-        this.io.on('testroom', (data) => {
-            if (data.roomInfo) {
-                this.roomAttendees = data.roomInfo.roomAttendees
-            } else if (data.online) {
-                this.io.emit('testroom', { isOnline: { username: this.username, socketId: this.io.id } })
-            } else if (data.roomUpdate) {
-                this.roomAttendees = data.roomUpdate
+        this.io.on(this.settings.roomId, (data) => {
+            console.log(data);
+            if (data.online) {
+                this.io.emit(this.settings.roomId, { isOnline: { username: this.username, socketId: this.io.id } })
+            }
+            if (data.queueUpdate) {
+                this.settings.queue = data.queueUpdate
             }
         })
+    },
+    mounted() {
+
     },
     beforeUnmount() {
         this.io.disconnect();
@@ -94,4 +121,54 @@ export default {
 
 <style scoped>
 
-</style>>
+    hr {
+        padding: 0;
+        border: 2px solid #FFD0E6;
+        width: 100%;
+    }
+
+    #room {
+        margin-top: 60px;
+    }
+
+    .search {
+        margin-top: -50px;
+        position: absolute;
+        z-index: 10;
+    }
+
+    .side-box {
+        padding: 0;
+        transition: 0.4s;
+
+        position: absolute;
+        height: 532px;
+        width: 400px;
+
+        top: 213px;
+        right: 0px;
+
+        background-color: #FFFFFF;
+        border: 2px solid #FFD0E6;
+
+        z-index: 1;
+    }
+
+    .arrow-btn {
+        transition: 0.4s;
+
+        font-size: 45px;
+        text-align: center;
+        position: absolute;
+        width: 72px;
+        height: 73px;
+        top: 140px;
+        right: 0px;
+        background-color: #FFFFFF;
+    }
+
+    i {
+        transition: 0.2s;
+    }
+
+</style>
