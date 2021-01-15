@@ -8,16 +8,13 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "express": "^4.17.1",
     "serve-static": "^1.14.1",
     "socket.io": "^3.0.4",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-0",
-    "vue-youtube": "^1.4.0",
-    "vue-youtube-iframe-api": "^0.1.2",
-    "youtube-vue3": "^0.1.10"
+    "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

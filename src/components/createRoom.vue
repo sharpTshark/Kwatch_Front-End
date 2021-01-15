@@ -1,17 +1,21 @@
 <template>
   <div>
     <div>
+      
       <div>
         create room component
       </div>
-        <input v-model="settings.roomName" type="text" name="roomName" id="roomName" placeholder="Enter roomName...">
-        <button @click="createRoom()">Create Room</button>
+      
+      <input v-model="settings.roomName" type="text" name="roomName" id="roomName" placeholder="Enter roomName...">
+      <button @click="createRoom()">Create Room</button>
+    
     </div>
   </div>
 </template>
 
 <script>
 
+import config from '../config'
 import axios from 'axios'
 
 export default {
@@ -28,7 +32,7 @@ export default {
   methods: {
     createRoom() {
       this.settings.roomAdmin = this.username
-      axios .post('http://192.168.1.29:3000/createRoom', this.settings)
+      axios .post(config.apiEndpoint+'/createRoom', this.settings)
             .then(res => {
                 if (res.data.valid) {
                   this.settings = res.data.settings

@@ -40,10 +40,6 @@ export default {
         this.$router.push('/room/roomAction=join/error=none/join=none')
       }
     }
-
-  },
-  created() {
-
   }
 }
 </script>

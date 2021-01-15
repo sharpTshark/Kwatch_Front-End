@@ -23,6 +23,8 @@
 
 <script>
 
+import config from '../config';
+
 import axios from 'axios'
 import io from 'socket.io/client-dist/socket.io'
 
@@ -55,7 +57,8 @@ export default {
     },
     methods: {
         buildRoom() {
-            axios   .get('http://192.168.1.29:3000/rooms/'+this.settings.roomId)
+            console.log(config.apiEndpoint+'/rooms/' + this.settings.roomId);
+            axios   .get(config.apiEndpoint+'/rooms/' + this.settings.roomId)
                     .then(res => {
                         if (res.data.valid) {
                             this.valid = true
@@ -92,7 +95,7 @@ export default {
     created() {
         this.buildRoom()
 
-        this.io = io('http://192.168.1.29:3000', {
+        this.io = io(config.apiEndpoint, {
             query: {
                 roomId: this.settings.roomId,
                 username: this.username
@@ -110,7 +113,7 @@ export default {
         })
     },
     mounted() {
-
+        
     },
     beforeUnmount() {
         this.io.disconnect();

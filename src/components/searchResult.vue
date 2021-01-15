@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import config from '../config'
 
 import axios from 'axios'
 
@@ -56,7 +57,7 @@ export default {
             if (e.key == 'Enter' || e.type == 'click') {
                 document.getElementById('aUl').style.overflowY = 'scroll'
                 this.searchQueueEmpt = false
-                axios   .post('http://192.168.1.29:3000/findvideo', { search: this.searchMeta })
+                axios   .post(config.apiEndpoint+'/findvideo', { search: this.searchMeta })
                     .then(res => {
                         this.searchQueue = res.data
                         console.log(res.data);
@@ -66,10 +67,7 @@ export default {
         },
 
         addQueue(item) {
-            // post to localhost:3000/addToQueue with new video info
-            // it wil be logged in the console of the server
-
-            axios   .post('http://192.168.1.29:3000/addToQueue', {
+            axios   .post(config.apiEndpoint+'/addToQueue', {
                         roomId: this.roomId,
                         video: {
                             title: item.snippet.title,

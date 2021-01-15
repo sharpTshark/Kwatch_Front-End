@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import config from '../config';
+
 import axios from 'axios'
 
 export default {
@@ -26,7 +28,7 @@ export default {
   },
   methods: {
     joinRoom() {
-      axios .get('http://192.168.1.29:3000/rooms/'+this.roomId)
+      axios .get(config.apiEndpoint+'/rooms/'+this.roomId)
             .then(res => {
               if      (res.data.valid)  this.$router.push('/room/roomId='+this.roomId)
               else                      this.$router.push('/room/roomAction=join/error=room not found/join=none')
