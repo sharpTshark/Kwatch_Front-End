@@ -103,7 +103,6 @@ export default {
         })
 
         this.io.on(this.settings.roomId, (data) => {
-            console.log(data);
             if (data.online) {
                 this.io.emit(this.settings.roomId, { isOnline: { username: this.username, socketId: this.io.id } })
             }
