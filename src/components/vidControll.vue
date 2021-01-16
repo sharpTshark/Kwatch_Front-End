@@ -3,10 +3,16 @@
         <button id="pause-btn" @click="togglePlay">
             <i class="fas fa-pause"></i>
         </button>
-        <input @click="bar()" class="slider" name="videoBar" id="bar" type="range" min="0" :max="vidDuration" step="1" v-model="vidTime">
-        <button id="sound-btn">
+
+        <input @click="bar" class="slider" name="videoBar" id="bar" type="range" min="0" :max="vidDuration" step="1" v-model="vidTime">
+        
+        <button id="sound-btn" @click="sound">
             <i class="fas fa-volume-up"></i>
         </button>
+
+        <div v-if="soundShow" class="sound-wrapper">
+            <input @click="setVolume" class="sound" type="range" name="volume" id="volume" min="0" max="100" v-model="volume">
+        </div>
     </div>
 
 </template>
@@ -19,7 +25,9 @@ export default {
         return {
             primColor: sessionStorage.getItem('prim'),
             secColor: sessionStorage.getItem('sec'),
-            roomId: this.$route.params.roomId
+            roomId: this.$route.params.roomId,
+            soundShow: false,
+            volume: 100
         }
     },
     methods: {
@@ -36,6 +44,13 @@ export default {
         // handle video progress bar
         bar() {
             this.io.emit(this.roomId, { onBarChange: this.vidTime });
+        },
+        sound() {
+            if (this.soundShow) this.soundShow = false
+            else this.soundShow = true
+        },
+        setVolume() {
+            this.player.setVolume(this.volume)
         }
     }
 }
@@ -44,6 +59,7 @@ export default {
 <style scoped>
 
     #controller {
+        position: relative;
 
         margin-top: -6px;
         background-color: #FFD0E6;
@@ -56,9 +72,6 @@ export default {
         background: none;
         border: none;
     }
-
-
-
 
     .slider {
         width: 92%;
@@ -88,6 +101,19 @@ export default {
         width: 25px;
         height: 25px;
         cursor: pointer;
+    }
+
+    .sound-wrapper {
+        padding: 5px 15px;
+        padding-top: 8px;
+        background-color: #FFD0E6;
+
+        bottom: 59px;
+        right: 30px;
+        position: absolute;
+
+        border-radius: 8px 8px 0px 0px;
+        border-bottom: 3px solid #e04387;
     }
 
 </style>

@@ -37,6 +37,7 @@
 </template>
 
 <script>
+
 import config from '../config'
 
 import axios from 'axios'
@@ -100,9 +101,6 @@ export default {
     mounted() {
         let list = document.getElementById('aUl')
         list.style.maxHeight = window.innerHeight-200+'px'
-    },
-    created() {
-
     }
 }
 </script>
