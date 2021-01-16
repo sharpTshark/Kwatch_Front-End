@@ -2,17 +2,21 @@
 
     <div class="" id="room">
         <div class="row">
+
             <div @click="hideBtn()" id="arrow-btn" class="arrow-btn">
                 <i class="fas fa-chevron-left"></i>
             </div>
+
             <div class="side-box">
                 <attendees :io="io" />
                         <hr>
                 <queue :io="io" :queue="settings.queue" />
             </div>
+
             <div>
                 <search class="search col-md-12" :searchResults="searchQueue" :io="io" />
             </div>
+            
             <div class="video col-md-12">
                 <videoComp class="video-comp" :queue="roomQueue" :io="io"/>
             </div>

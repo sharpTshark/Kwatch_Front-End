@@ -2,15 +2,20 @@
     <div id="queue">
         <h1>Queue</h1>
         <ul>
-            <li class="d-flex" v-for="video in queue" @click="playThisVid(video)">
-                <img class="" :src="video.thumbnail.url" alt="video">
-                <h5>{{video.title}}</h5>
+            <li class="d-flex justify-content-between" v-for="video in queue" @click="playThisVid(video)">
+                <div class="d-flex">
+                    <img class="" :src="video.thumbnail.url" alt="video">
+                    <h5>{{video.title}}</h5>
+                </div>
+                <button @click="delItem(video.id)"><i class="fas fa-times-circle"></i></button>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
+
+import config from '../config'
 
 import axios from 'axios'
 
@@ -25,6 +30,20 @@ export default {
     methods: {
         playThisVid(video) {
             this.io.emit(this.roomId, { loadVid: video.id })
+        },
+        delItem(id) {
+            this.io.emit(this.roomId, { delQueueItem: id })
+
+            // axios.post(config.apiEndpoint+'/delQueueItem', {
+            //     roomId: this.roomId,
+            //     id: id
+            // })
+            // .then((res) => {
+            //     console.log(res)
+            //     this.queue = res.data.queue
+                
+            // })
+            // .catch((err) => console.error(err))
         }
     },
     mounted() {
@@ -61,6 +80,7 @@ export default {
 
         border: 3px solid #FFD0E6;
         border-radius: 4px;
+        background-color: #FEEFF4;
 
         margin: 10px 0px;
         max-height: 58px;
@@ -94,6 +114,16 @@ export default {
         transition: 1s;
         background: #FFD0E6; 
         border-radius: 10px;
+    }
+
+    button {
+        background-color: transparent;
+        padding: 0 10px;
+        border: none;
+    }
+    button i {
+        font-size: 20px;
+        color: #ffbcdb;
     }
 
 </style>
