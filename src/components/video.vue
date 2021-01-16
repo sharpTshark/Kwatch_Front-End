@@ -95,9 +95,14 @@ export default {
             setInterval(() => {
                 this.vidTime = this.player.getCurrentTime()
             }, 1000);
-        }
+        },
+        myEventHandler(e) {
+            this.player.setSize('100%', window.innerHeight-200)
+        },
     },
     created() {
+        window.addEventListener("resize", this.myEventHandler);
+
         this.io.on(this.roomId, (data) => {
             if (data.roomInfo) {
                 if (data.roomInfo.video.paused) this.paused = true
@@ -109,7 +114,10 @@ export default {
     },
     mounted() {
         this.init()
-    }
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.myEventHandler);
+    },
 }
 
 </script>
