@@ -33,17 +33,6 @@ export default {
         },
         delItem(id) {
             this.io.emit(this.roomId, { delQueueItem: id })
-
-            // axios.post(config.apiEndpoint+'/delQueueItem', {
-            //     roomId: this.roomId,
-            //     id: id
-            // })
-            // .then((res) => {
-            //     console.log(res)
-            //     this.queue = res.data.queue
-                
-            // })
-            // .catch((err) => console.error(err))
         }
     },
     mounted() {
