@@ -4,6 +4,10 @@
             <i class="fas fa-pause"></i>
         </button>
 
+        <button @click="nextVid" class="next-wrapper">
+            <i class="fas fa-forward"></i>
+        </button>
+
         <input @click="bar" class="slider" name="videoBar" id="bar" type="range" min="0" :max="vidDuration" step="1" v-model="vidTime">
         
         <button id="sound-btn" @click="sound">
@@ -23,8 +27,6 @@ export default {
     props: ['player', 'io', 'vidDuration', 'vidTime'],
     data() {
         return {
-            primColor: sessionStorage.getItem('prim'),
-            secColor: sessionStorage.getItem('sec'),
             roomId: this.$route.params.roomId,
             soundShow: false,
             volume: 100
@@ -51,6 +53,9 @@ export default {
         },
         setVolume() {
             this.player.setVolume(this.volume)
+        },
+        nextVid() {
+            this.io.emit(this.roomId, { vidEnded: true })
         }
     }
 }

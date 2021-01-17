@@ -2,8 +2,8 @@
     <div id="queue">
         <h1>Queue</h1>
         <ul>
-            <li class="d-flex justify-content-between" v-for="video in queue" @click="playThisVid(video)">
-                <div class="d-flex">
+            <li class="d-flex justify-content-between" v-for="video in queue">
+                <div class="d-flex"  @click="playThisVid(video)">
                     <img class="" :src="video.thumbnail.url" alt="video">
                     <h5>{{video.title}}</h5>
                 </div>
@@ -109,6 +109,8 @@ export default {
         background-color: transparent;
         padding: 0 10px;
         border: none;
+
+        pointer-events: all;
     }
     button i {
         font-size: 20px;

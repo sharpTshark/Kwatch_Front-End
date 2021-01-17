@@ -2,9 +2,7 @@
     <div class="video">
         <div class="player-wrapper">
             <div class="player">
-                <div v-if="!ready">Loading...</div>
-                <div v-else class="top" id="top"></div>
-
+                <div class="top" id="top"></div>
                 <div ref="player" id="player"></div>
             </div>
         </div>
@@ -45,8 +43,7 @@ export default {
         onReady(e) {
             this.barProgress()
 
-            vidReady(   
-                this.ready, 
+            this.ready = vidReady(
                 this.player,
                 this.paused, 
                 this.reConnectAttempts, 
@@ -54,8 +51,6 @@ export default {
                 this.$router,
                 this.roomId
             )
-            
-            this.ready = true
 
             this.vidDuration = this.player.getDuration()
 
@@ -63,14 +58,14 @@ export default {
                 handleData(data, this.player, this.io, this.roomId)
                 if (data.loadVideoById) {
                     this.player.loadVideoById(data.loadVideoById)
-                    setTimeout(() => {
-                        this.vidDuration = this.player.getDuration()
-                    }, 1000);
+                    setTimeout(() => this.vidDuration = this.player.getDuration() , 1000);
                 }
             })
         },
         onStateChange(e) {
-
+            if (e.data == 0) {
+                this.io.emit(this.roomId, { vidEnded: true })
+            }
         },
         async init() {
             var tag = document.createElement('script')
