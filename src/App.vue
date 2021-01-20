@@ -180,6 +180,10 @@ export default {
       display: block;
     }
 
+    nav hr {
+      display: none;
+    }
+
     nav input {
       padding: 0;
       width: 134px;
