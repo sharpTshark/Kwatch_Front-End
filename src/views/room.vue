@@ -86,11 +86,17 @@ export default {
         },
         hideBtn() {
             if (this.toggled) {
-                document.getElementsByClassName('side-box')[0].style.right = '-400px'
+                document.getElementsByClassName('side-box')[0].style.right = '-1200px'
+                setTimeout(() => {
+                    document.getElementsByClassName('side-box')[0].style.display = 'none'
+                }, 400);
                 document.getElementsByClassName('fa-chevron-left')[0].style.transform = 'rotate(180deg)';
                 this.toggled = false
             } else {
-                document.getElementsByClassName('side-box')[0].style.right = '0px'
+                document.getElementsByClassName('side-box')[0].style.display = 'block'
+                setTimeout(() => {
+                    document.getElementsByClassName('side-box')[0].style.right = '0px'
+                }, 400);
                 document.getElementsByClassName('fa-chevron-left')[0].style.transform = 'rotate(0deg)';
                 this.toggled = true
             }
@@ -134,7 +140,7 @@ export default {
     }
 
     #room {
-        margin-top: 60px;
+        margin-top: 0px;
     }
 
     .search {
@@ -151,13 +157,13 @@ export default {
         height: 532px;
         width: 400px;
 
-        top: 213px;
+        top: 200px;
         right: 0px;
 
         background-color: #FFFFFF;
         border: 2px solid #FFD0E6;
 
-        z-index: 1;
+        z-index: 100;
     }
 
     .arrow-btn {
@@ -168,13 +174,53 @@ export default {
         position: absolute;
         width: 72px;
         height: 73px;
-        top: 140px;
+        top: 130px;
         right: 0px;
         background-color: #FFFFFF;
+
+        z-index: 100;
     }
 
     i {
         transition: 0.2s;
+    }
+
+    @media only screen and (max-width: 992px) {
+
+        .side-box {
+            padding: 0;
+            transition: 0.4s;
+
+            position: relative;
+            height: 532px;
+            width: 100vw;
+
+            top: 70px;
+            right: 0px;
+
+            background-color: #FFFFFF;
+            border: 2px solid #FFD0E6;
+
+            z-index: 100;
+        }
+
+        .arrow-btn {
+            right: 0;
+            top: 129px;
+            height: 70px;
+            width: 70px;
+        }
+
+
+        .video {
+            margin-top: 0px;
+        }
+
+        .search {
+            margin-top: -48px;
+            position: absolute;
+            z-index: 10;
+        }
     }
 
 </style>

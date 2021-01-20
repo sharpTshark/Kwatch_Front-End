@@ -96,12 +96,22 @@ export default {
             document.getElementById('aUl').style.overflowY = 'hidden'
             this.searchQueueEmpt = true
             this.searchQueue = []
+        },
+        myEventHandler(e) {
+        let list = document.getElementById('aUl')
+        list.style.maxHeight = window.innerHeight-208+'px'
         }
     },
     mounted() {
         let list = document.getElementById('aUl')
-        list.style.maxHeight = window.innerHeight-200+'px'
-    }
+        list.style.maxHeight = window.innerHeight-208+'px'
+    },
+    created() {
+        window.addEventListener("resize", this.myEventHandler);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.myEventHandler);
+    },
 }
 </script>
 
@@ -136,7 +146,7 @@ export default {
     }
 
     #aUl {
-        padding-right: 10%;
+        overflow: hidden;
         list-style-type: none;
         z-index: 10;
         position: absolute;
@@ -161,7 +171,6 @@ export default {
         color: white;
 
         direction: ltr;
-
 
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -222,6 +231,14 @@ export default {
         transition: 1s;
         background: #FEEFF4; 
         border-radius: 10px;
+    }
+
+    @media only screen and (max-width: 700px) {
+        #aUl {
+            width: 100%;
+            margin-top: -15px;
+        }
+
     }
 
 </style>
